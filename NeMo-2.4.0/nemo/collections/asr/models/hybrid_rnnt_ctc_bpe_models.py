@@ -255,6 +255,7 @@ class EncDecHybridRNNTCTCBPEModel(EncDecHybridRNNTCTCModel, ASRBPEMixin):
         new_tokenizer_type: str,
         decoding_cfg: Optional[DictConfig] = None,
         ctc_decoding_cfg: Optional[DictConfig] = None,
+        bnb_optim = False,
     ):
         """
         Changes vocabulary used during RNNT decoding process. Use this method when fine-tuning on
@@ -319,8 +320,29 @@ class EncDecHybridRNNTCTCBPEModel(EncDecHybridRNNTCTCModel, ASRBPEMixin):
         del self.decoder
         self.decoder = EncDecHybridRNNTCTCBPEModel.from_config_dict(new_decoder_config)
 
+        if bnb_optim:
+            import bitsandbytes as bnb 
+
+            print(new_decoder_config)
+            with open_dict(new_decoder_config):
+                new_decoder_config.bnb_optim = True
+
+            vocab_size = self.tokenizer.vocab_size
+            self.decoder.prediction.embed = bnb.nn.StableEmbedding(vocab_size + 1, 640, padding_idx=vocab_size)
+
         del self.loss
-        self.loss = RNNTLoss(num_classes=self.joint.num_classes_with_blank - 1)
+        loss_name, loss_kwargs = self.extract_rnnt_loss_cfg(self.cfg.get('loss', None))
+
+        num_classes = self.joint.num_classes_with_blank - 1  # for standard RNNT and multi-blank
+
+        if loss_name == 'tdt':
+            num_classes = num_classes - self.joint.num_extra_outputs
+
+        self.loss = RNNTLoss(
+            num_classes = num_classes,
+            loss_name = loss_name,
+            loss_kwargs = loss_kwargs,
+        )
 
         if decoding_cfg is None:
             # Assume same decoding config as before
@@ -363,6 +385,9 @@ class EncDecHybridRNNTCTCBPEModel(EncDecHybridRNNTCTCModel, ASRBPEMixin):
 
         with open_dict(self.cfg.decoding):
             self.cfg.decoding = decoding_cfg
+
+        with open_dict(self.cfg.tokenizer):
+            self.cfg.tokenizer = tokenizer_cfg
 
         logging.info(f"Changed tokenizer of the RNNT decoder to {self.joint.vocabulary} vocabulary.")
 
