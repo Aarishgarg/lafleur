@@ -87,3 +87,18 @@ Here are the observations on the model's prediction stage (character output) dur
 
 ### 🟥 Planned
 - 
+
+## 🖊️ Citation
+```bash
+    @article{xiong2025audiorwkv,
+    title   = {AudioRWKV: Efficient and Stable Bidirectional RWKV for Audio Pattern Recognition},
+    author  = {Xiong, Jiayu and Xue, Jun and Kwan, Jianlong and Wang, Jing},
+    journal = {arXiv preprint arXiv:2509.02167},
+    year    = {2025}
+}    
+```
+
+## References (Code Bases)
+- BlinkDL. RWKV-LM (RWKV-7). GitHub repository. Available at: https://github.com/BlinkDL/RWKV-LM.
+- AudioRWKV. GitHub repository. Available at: https://github.com/Jiayu-Xiong/AudioRWKV
+- paper_accurate_fast_cheap. GitHub repository. Available at: https://github.com/revdotcom/paper_accurate_fast_cheap/
