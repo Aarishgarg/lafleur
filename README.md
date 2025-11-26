@@ -61,6 +61,14 @@ If you are using a GPU with limited memory (e.g., RTX 4090) and wish to enable t
 
 * uv pip install bitsandbytes
 
+### Optional: birwkv7 for long-form ASR
+As an experimental setup(on 0.6b model), the attention in the encoder is replaced with BiRWKV7. In a preliminary test, the model was able to perform transcription on up to 8.5 hours of audio segments in a single pass (or with a chunk size of 480 seconds and a batch size of 64). The test was conducted on a PRO 6000 with 96 GB of VRAM, and the measured RTFx is approximately 1900.
+
+You can enable BiRWKV7 training in the script by setting: 
+* using_birwkv7 = True
+* uv pip install ninja
+
+However, since the RWKV parameters are randomly initialized instead of loaded from pretrained weights, it is expected that significantly more training data will be required for the model to converge.
 
 ## Result
 ![val_wer](./img/tensorboard_val_wer.png)
@@ -81,9 +89,10 @@ Here are the observations on the model's prediction stage (character output) dur
 ### 🟩 Done
 - 8-bit optimizer integration
 - Fix loss initialization bug  
+- replace encoder attention to bi-rwkv
 
 ### 🟧 In Progress
-- replace encoder attention to bi-rwkv
+- 
 
 ### 🟥 Planned
 - replace encoder norm_out layernorm to BiasNorm(zipformer proposes)  

@@ -19,6 +19,7 @@ os.environ['CUDA_VISIBLE_DEVICES'] = '0'
 
 # Flag to enable 8-bit optimizer for memory optimization
 bnb_optim = False
+using_birwkv7 = False
 
 
 # --- Bitsandbytes (bnb) 8-bit Optimizer Registration (Optional) ---
@@ -73,13 +74,20 @@ ori_ctc_decoder_decoder_layers_Conv1d = asr_model.ctc_decoder.decoder_layers[0]
 prev_vocab_size = asr_model.tokenizer.vocab_size
 
 # 2. Change/Expand vocabulary for the new language/tokenizer
-print(f"STEP 2: Changing vocabulary from size {prev_vocab_size} to new size...")
+print(f"STEP 2.1: Changing vocabulary from size {prev_vocab_size} to new size...")
 # This call re-initializes the vocabulary-related layers (Embeddings, Final Linear/Conv layers)
 asr_model.change_vocabulary(
     new_tokenizer_dir = "./en1024_hi256", 
     new_tokenizer_type = "bpe",
     bnb_optim = bnb_optim
 )
+
+if using_birwkv7:
+    print(f"STEP 2.2 Changing attention to birwkv7")
+    asr_model.change_attention_model(
+        self_attention_model = 'rwkv7_attn',
+    )
+
 cur_vocab_size = asr_model.tokenizer.vocab_size
 print(asr_model)
 print(f"INFO: New vocabulary size: {cur_vocab_size}")
