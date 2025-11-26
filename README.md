@@ -86,7 +86,7 @@ Here are the observations on the model's prediction stage (character output) dur
 - replace encoder attention to bi-rwkv
 
 ### 🟥 Planned
-- 
+- replace encoder norm_out layernorm to BiasNorm(zipformer proposes)  
 
 ## 🖊️ Citation
 ```bash
