@@ -95,7 +95,7 @@ Here are the observations on the model's prediction stage (character output) dur
 - 
 
 ### 🟥 Planned
-- replace encoder norm_out layernorm to BiasNorm(zipformer proposes)  
+- By using the wind_rwkv CUDA kernel, GPU memory usage can be reduced on GPUs with compute capability higher than sm_80 (e.g. RTX 3090, RTX 4090).
 
 ## 🖊️ Citation
 ```bash
